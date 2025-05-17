@@ -1,6 +1,6 @@
 # CogKit SDK
 
-![CogKit Logo](./src/img/cogkit_logo.svg)
+![CogKit Logo](https://raw.githubusercontent.com/Lt2023/CogKit/155e3802ade3557eb8a5f80f582abc310b5361fe/src/img/cogkit_Logo.svg)
 
 CogKit SDK is a convenient Python toolkit designed for calling CogKit's `/api/run_code/python` interface. It simplifies the entire process of remotely executing Python code, supporting synchronous and asynchronous calls, batch code execution, and intelligent result parsing.
 
