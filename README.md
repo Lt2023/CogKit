@@ -1,6 +1,6 @@
 # CogKit SDK
 
-![CogKit Logo](./src/img/cogkit_logo.svg)
+![CogKit Logo](https://raw.githubusercontent.com/Lt2023/CogKit/155e3802ade3557eb8a5f80f582abc310b5361fe/src/img/cogkit_Logo.svg)
 
 CogKit SDK 是一个便捷的 Python 工具包，专为调用 CogKit 的 `/api/run_code/python` 接口而设计。它简化了远程执行 Python 代码的整个流程，支持同步和异步调用方式、批量代码执行以及结果智能解析等实用功能。
 
