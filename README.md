@@ -1,6 +1,6 @@
 # CogKit SDK
 
-![CogKit Logo](./src/img/cogkit_logo.svg)
+![CogKit Logo](https://coludai.cn/data_img/cogkit_logo.svg)
 
 CogKit SDK 是一个便捷的 Python 工具包，专为调用 SAI API（包括 SAI-Chat-L6、SAI-Reasoner3mini、SAI-img_desc、SAI-tts、SAI-txt2img、SAI-Coder 和 CodeRunner）而设计。它简化了令牌生成、API 调用和结果处理，支持同步、异步和批量操作，以及智能响应解析。
 
