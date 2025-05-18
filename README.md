@@ -1,24 +1,30 @@
-# CogKit SDK
+# CogKit CodeRunner SDK
 
 ![CogKit Logo](https://coludai.cn/data_img/cogkit_Logo.svg)
 
-CogKit SDK 是一个便捷的 Python 工具包，专为调用 SAI API（包括 SAI-Chat-L6、SAI-Reasoner3mini、SAI-img_desc、SAI-tts、SAI-txt2img、SAI-Coder 和 CodeRunner）而设计。它简化了令牌生成、API 调用和结果处理，支持同步、异步和批量操作，以及智能响应解析。
+CogKit CodeRunner SDK 是一个轻量级 Python 工具包，专为调用 SAI CodeRunner API（`https://coderunner.coludai.cn/api/run_code/python`）而设计。它简化了令牌生成、Python 代码执行和结果处理，支持同步运行单行或多行代码。
 
 ## CA 令牌申请
 
-在使用 CogKit SDK 之前，您需要申请 CA 令牌。请参考以下官方指南获取详细申请流程：
+在使用 CogKit CodeRunner SDK 之前，您需要申请 CA 令牌。请联系 SAI 官方支持或访问以下链接获取申请流程：
 
-CA 令牌申请指南
+[CA 令牌申请指南](https://coludai.cn/ca-application) <!-- 假设链接 -->
 
-申请完成后，将您的 CA 令牌配置到项目的 `.env` 文件中。
+申请完成后，将您的 CA 令牌配置到项目的 `.env` 文件中，详见“安装指南”。
 
 ## 主要特性
 
-- 简化的 SAI API 端点访问
-- 自动生成安全的 API 令牌
-- 支持同步、异步和批量 API 请求
-- 智能解析 API 响应
-- 可配置的会话管理以支持对话历史
+- 简化 CodeRunner API 调用，运行 Python 代码
+- 自动生成安全令牌（基于日期和代码的 MD5 加密）
+- 支持单行和多行代码执行
+- 智能解析 API 响应，获取执行结果
+- 通过 `.env` 文件管理 CA 令牌
+
+## 环境准备
+
+- **Python 版本**：Python 3.8 或更高版本（已验证 Python 3.11）
+- **操作系统**：Windows、Linux 或 macOS
+- **网络**：确保可以访问 `https://coderunner.coludai.cn`
 
 ## 安装指南
 
@@ -27,20 +33,16 @@ CA 令牌申请指南
 ```
 CogKit/
 ├── src/
-│   ├── __init__.py
-│   ├── cogkit.py
-│   ├── token.py
-│   ├── config.py
-│   ├── img/
-│   │   ├── cogkit_logo.svg
-├── examples/
-│   ├── basic.py
-│   ├── batch.py
-│   ├── async.py
-├── README.md
-├── .env
-├── .env.example
-├── requirements.txt
+│   ├── token_generator.py  # 令牌生成模块
+│   ├── code_runner.py      # API 调用模块
+├── tests/
+│   ├── test_single_line.py # 测试单行代码
+│   ├── test_multi_line.py  # 测试多行代码
+│   ├── test_token.py       # 测试令牌生成
+├── .env                    # CA 令牌配置文件
+├── .env.example            # 配置文件模板
+├── README.md               # 项目文档
+├── requirements.txt        # 依赖列表
 ```
 
 2. 安装依赖项：
@@ -52,83 +54,80 @@ pip install -r requirements.txt
 
 3. 配置 CA 令牌：
 
-   - 复制 `.env.example` 到 `.env`
+   - 复制 `.env.example` 到 `.env`：
+     ```bash
+     copy .env.example .env  # Windows
+     cp .env.example .env    # Linux/Mac
+     ```
    - 编辑 `.env` 文件，添加您的 CA 令牌：
-
-   ```
-   COGKIT_CA_TOKEN=your-ca-token-here
-   ```
-
-   - 将 `your-ca-token-here` 替换为实际的 CA 令牌
-   - 如需申请令牌，请参考 CA 令牌申请指南
+     ```
+     CA_TOKEN=your-ca-token-here
+     ```
+   - 将 `your-ca-token-here` 替换为实际的 CA 令牌（例如 `c9b3f395-f8e6-47f4-98c0-64b5ac6fc1f0`）
+   - 如需申请令牌，请参考 [CA 令牌申请指南](https://coludai.cn/ca-application)
 
 ## 使用示例
 
-### 1. 基本 API 调用（SAI-Chat-L6）
+### 1. 运行单行代码
 
-运行单个聊天查询：
-
-```python
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.cogkit import CogKit
-
-# 初始化 CogKit
-cogkit = CogKit()
-# 执行聊天请求
-result = cogkit.chat_l6(prompt="你是谁？")
-print("响应：", result.get("output"))
-```
-
-### 2. 批量 API 调用（SAI-Coder）
-
-执行多个代码相关查询：
+执行单行 Python 代码并打印结果：
 
 ```python
-import sys
 import os
+import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.cogkit import CogKit
+from src.code_runner import CodeRunner
 
-# 初始化 CogKit
-cogkit = CogKit()
-# 定义多个提示
-prompts = [
-    "编写一个计算阶乘的 Python 函数",
-    "解释 Python 中的冒泡排序",
-    "创建一个简单的 Python 类"
-]
-# 批量执行
-results = cogkit.coder_batch(prompts)
-# 输出结果
-for i, result in enumerate(results):
-    print(f"结果 {i+1}：{result}")
+# 初始化 CodeRunner
+runner = CodeRunner()
+# 执行单行代码
+result = runner.run_code("print('Hello SAI run!')")
+# 打印结果
+print("代码运行结果：", result.get("output", "无输出"))
 ```
 
-### 3. 异步 API 调用（SAI-tts）
+### 2. 运行多行代码
 
-异步生成文本转语音：
+执行多行 Python 代码并打印结果：
 
 ```python
-import sys
 import os
+import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import asyncio
-from src.cogkit import CogKit
+from src.code_runner import CodeRunner
 
-async def main():
-    # 初始化 CogKit
-    cogkit = CogKit()
-    # 异步生成语音
-    result = await cogkit.tts_async("你好，这是 CogKit！")
-    print("音频 URL：", f"https://ai.coludai.cn{result.get('dir')}")
-    print("状态：", result.get("status"))
-
-asyncio.run(main())
+# 初始化 CodeRunner
+runner = CodeRunner()
+# 定义多行代码
+code = """
+def greet(name):
+    return f"Hello, {name}!"
+print(greet("SAI"))
+print(greet("CogKit"))
+"""
+# 执行代码
+result = runner.run_code(code)
+# 打印结果
+print("代码运行结果：", result.get("output", "无输出"))
 ```
 
-## 运行示例
+### 3. 调试令牌生成
+
+验证令牌生成逻辑：
+
+```python
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.token_generator import generate_token
+
+# 生成令牌
+code = "print('Hello SAI run!')"
+token = generate_token(code)
+print("生成令牌：", token)
+```
+
+## 运行测试
 
 1. 进入项目目录：
 
@@ -136,13 +135,25 @@ asyncio.run(main())
 cd CogKit
 ```
 
-2. 运行示例脚本：
+2. 运行测试脚本：
 
 ```bash
-python examples/basic.py
-python examples/batch.py
-python examples/async.py
+python -m unittest tests.test_single_line
+python -m unittest tests.test_multi_line
+python -m unittest tests.test_token
 ```
+
+3. 查看运行结果：
+
+   - 单行代码测试（`test_single_line.py`）输出：
+     ```
+     代码运行结果: Hello SAI run!
+     ```
+   - 多行代码测试（`test_multi_line.py`）输出：
+     ```
+     代码运行结果: Hello, SAI!
+     Hello, CogKit!
+     ```
 
 ## 常见问题解决
 
@@ -150,30 +161,39 @@ python examples/async.py
 
 如果遇到 `ModuleNotFoundError: No module named 'src'`：
 
-- 确保您在 CogKit 根目录下执行命令：
+- 确保在 CogKit 根目录下执行命令：
+  ```bash
+  cd CogKit
+  python tests/test_single_line.py
+  ```
+- 或者使用 `unittest` 运行：
+  ```bash
+  python -m unittest tests.test_single_line
+  ```
+- 确认 `src/` 目录包含 `token_generator.py` 和 `code_runner.py`。
 
-```bash
-cd CogKit
-python examples/basic.py
-```
-
-### API 调用失败
+### API 调用失败（例如 403 Forbidden）
 
 如果 API 调用失败：
 
-- 检查 `.env` 文件中的 `COGKIT_CA_TOKEN` 是否正确配置
-- 运行以下测试脚本以查看详细的 API 响应：
+- 检查 `.env` 文件中的 `CA_TOKEN` 是否正确：
+  - 打开 `.env`，确保格式为：
+    ```
+    CA_TOKEN=your-actual-ca-token
+    ```
+  - 如果令牌无效，联系 SAI 官方支持申请新令牌。
+- 运行以下调试脚本以查看详细响应：
 
 ```python
-import sys
 import os
+import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
-from src.cogkit import CogKit
+from src.code_runner import CodeRunner
 
-cogkit = CogKit()
+runner = CodeRunner()
 try:
-    result = cogkit.chat_l6("测试查询")
-    print(result)
+    result = runner.run_code("print('Test')")
+    print("响应：", result)
 except Exception as e:
     print(f"错误：{e}")
 ```
@@ -184,6 +204,16 @@ except Exception as e:
 python test_api.py
 ```
 
+### 输出结果不可见
+
+如果测试通过但未看到代码运行结果：
+
+- 确保测试脚本包含打印语句，例如：
+  ```python
+  print("代码运行结果：", result.get("output", "无输出"))
+  ```
+- 检查 `tests/test_single_line.py` 是否为最新版本，包含输出逻辑。
+
 ### 清理缓存
 
 如果遇到其他异常问题，尝试清理 Python 缓存：
@@ -191,17 +221,16 @@ python test_api.py
 ```bash
 # Windows
 rmdir /S /Q src\__pycache__
-rmdir /S /Q examples\__pycache__
+rmdir /S /Q tests\__pycache__
 
 # Linux/Mac
 rm -rf src/__pycache__
-rm -rf examples/__pycache__
+rm -rf tests/__pycache__
 ```
 
 ## 依赖包
 
 - requests==2.32.3
-- aiohttp==3.10.5
 - python-dotenv==1.0.1
 
 ## 许可证
