@@ -1,14 +1,13 @@
 from dotenv import load_dotenv
 import os
 
-def load_config() -> dict:
-    """
-    从环境变量加载配置
-
-    返回:
-        dict: 包含配置的字典，目前包括COGKIT_CA_TOKEN
+def load_config():
+    """加载环境配置
+    
+    Returns:
+        dict: 包含 COGKIT_CA_TOKEN 的配置字典
     """
     load_dotenv()
     return {
-        "COGKIT_CA_TOKEN": os.getenv("COGKIT_CA_TOKEN")
+        'COGKIT_CA_TOKEN': os.getenv('COGKIT_CA_TOKEN', '')
     }
